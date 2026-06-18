@@ -108,3 +108,20 @@ See `.env.example` for all required variables:
 - `ALLOWED_HOSTS` — Comma-separated allowed hosts
 - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` — PostgreSQL connection
 - `CORS_ALLOWED_ORIGINS` — Comma-separated frontend origins
+src/
+  components/   # Shared UI components
+  pages/        # Route-level pages
+  routes/       # Application routing
+  services/     # API layer (Axios)
+  store/        # Application state
+  utils/        # Shared utilities and constants
+```
+
+## Scripts
+
+- `npm run dev` — start development server
+- `npm run build` — production build
+- `npm run lint` — run ESLint
+- `npm run test` — run unit and smoke tests
+- `npm run format` — format code with Prettier
+- `npm run preview` — preview production build
