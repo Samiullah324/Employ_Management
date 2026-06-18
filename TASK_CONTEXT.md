@@ -1,72 +1,72 @@
-# TASK_CONTEXT — FE-001: Initialize React Application
+# TASK_CONTEXT — FE-002: UI Framework & Layout Setup
 
 ## Ticket Scope
 
-Set up the initial React frontend for the Employee Attendance & Payroll Management System with Vite, scalable folder structure, routing, API service layer, environment variables, and ESLint/Prettier.
+Implement the global UI structure and design system for the Employee Attendance & Payroll Management frontend using a modern UI library: MUI theme, responsive dashboard layout (sidebar + top navbar), reusable layout components, protected route wrapper, and loading spinner.
 
 ## Key Implementation Decisions
 
-- **Vite + React** chosen over CRA for performance and modern tooling.
-- **App at repository root** — the repo currently contains only documentation; the frontend lives at the root to keep `npm run dev` simple until a backend package is added.
-- **React Router DOM** with nested routes under a shared `Layout` component.
-- **Axios** configured in `src/services/api.js` with `VITE_API_BASE_URL` from environment variables.
-- **Error sanitization** — Axios interceptors reject with `sanitizeAxiosError()` to redact tokens, passwords, cookies, and other sensitive fields before errors propagate.
-- **Store** uses a lightweight React Context provider (`AppStoreProvider`) as a placeholder for future state management (no Redux/Zustand yet — not required by ticket).
-- **Placeholder pages**: Dashboard, Employees, Attendance, Payroll, and Not Found.
-- **ESLint flat config** uses a direct array export (no `defineConfig` / `globalIgnores` from `eslint/config`); configs are spread at the top level per ESLint 10 flat config rules.
-- **Vitest** added for smoke tests (`App.test.jsx`) and API error sanitization coverage (`sanitizeError.test.js`).
+- **Material UI (MUI)** chosen over Ant Design to pair cleanly with the existing React + Vite stack and Emotion styling.
+- **Global theme** in `src/theme/theme.js` with primary (`#2563eb`) and secondary (`#7c3aed`) palette colors plus typography scale (Inter/Roboto stack, heading and body variants).
+- **Layout components** under `src/components/layout/`:
+  - `AppLayout` — shell with fixed top navbar, sidebar, and main content area via React Router `Outlet`.
+  - `SidebarMenu` — permanent drawer on desktop (`md+`), temporary drawer on mobile with hamburger toggle.
+  - `TopNavbar` — fixed `AppBar` with mobile menu button and page title.
+  - `ProtectedLayout` — auth guard that shows `LoadingSpinner`, redirects to `/login`, or renders `AppLayout`.
+- **Protected routing** — dashboard routes wrapped in `ProtectedLayout`; public `/login` route added with a placeholder sign-in action until real auth is implemented.
+- **LoadingSpinner** — reusable MUI `CircularProgress` with optional full-screen mode and accessible `role="status"`.
+- **Store extension** — added `isAuthLoading` to auth state; `AppStoreProvider` accepts optional `initialState` for tests.
+- **Replaced** the FE-001 CSS-based `Layout.jsx` with the new MUI layout system.
+- **Assumption**: Real authentication is out of scope; `LoginPage` uses a demo “Continue to dashboard” button to set `isAuthenticated` in the app store.
 
 ## Files Changed / Added
 
-| Path                              | Purpose                                                                |
-| --------------------------------- | ---------------------------------------------------------------------- |
-| `package.json`                    | Project metadata (`employ-management-frontend`), scripts, dependencies |
-| `vite.config.js`                  | Vite + Vitest configuration                                            |
-| `eslint.config.js`                | ESLint 10 flat config with Prettier integration                        |
-| `.prettierrc`, `.prettierignore`  | Prettier configuration                                                 |
-| `.env.example`                    | Documented environment variable template                               |
-| `.gitignore`                      | Ignore `.env` and build artifacts                                      |
-| `index.html`                      | App entry HTML                                                         |
-| `src/App.jsx`                     | Root app with router and store provider                                |
-| `src/App.test.jsx`                | App render smoke test                                                  |
-| `src/main.jsx`                    | React DOM entry                                                        |
-| `src/components/Layout.jsx`       | Shared layout and navigation                                           |
-| `src/pages/*`                     | Placeholder route pages                                                |
-| `src/routes/AppRoutes.jsx`        | Route definitions                                                      |
-| `src/services/api.js`             | Axios instance with sanitized error interceptors                       |
-| `src/store/context.js`            | Store context and initial state                                        |
-| `src/store/AppStoreProvider.jsx`  | Context provider component                                             |
-| `src/store/useAppStore.js`        | Store hook                                                             |
-| `src/store/index.js`              | Store module exports                                                   |
-| `src/utils/constants.js`          | App constants and env-backed API URL                                   |
-| `src/utils/sanitizeError.js`      | Axios error sanitization utility                                       |
-| `src/utils/sanitizeError.test.js` | Sanitization unit test                                                 |
-| `src/test/setup.js`               | Vitest + Testing Library setup                                         |
-| `README.md`                       | Project setup documentation                                            |
+| Path | Purpose |
+| --- | --- |
+| `package.json`, `package-lock.json` | Added `@mui/material`, `@mui/icons-material`, `@emotion/react`, `@emotion/styled` |
+| `src/theme/theme.js`, `src/theme/index.js` | Global MUI theme (colors, typography, shape) |
+| `src/components/layout/AppLayout.jsx` | Main responsive dashboard layout |
+| `src/components/layout/SidebarMenu.jsx` | Reusable sidebar navigation drawer |
+| `src/components/layout/TopNavbar.jsx` | Reusable top navigation bar |
+| `src/components/layout/ProtectedLayout.jsx` | Auth guard wrapper for protected routes |
+| `src/components/layout/navigation.js` | Shared nav item config with icons |
+| `src/components/layout/index.js` | Layout module exports |
+| `src/components/ui/LoadingSpinner.jsx` | Reusable loading spinner |
+| `src/components/ui/index.js` | UI component exports |
+| `src/components/index.js` | Updated component barrel exports |
+| `src/pages/LoginPage.jsx` | Public login placeholder for protected-route redirect |
+| `src/pages/index.js` | Export `LoginPage` |
+| `src/routes/AppRoutes.jsx` | Public `/login` + protected nested routes |
+| `src/App.jsx` | Wrapped app with MUI `ThemeProvider` and `CssBaseline` |
+| `src/store/context.js` | Added `isAuthLoading` to initial auth state |
+| `src/store/AppStoreProvider.jsx` | Optional `initialState` prop for testing |
+| `src/App.css` | Removed legacy layout styles; kept page card styles |
+| `vite.config.js` | Vitest inline deps for MUI ESM compatibility |
+| `src/test/matchMedia.js` | `matchMedia` mock helper for responsive layout tests |
+| `src/components/layout/*.test.jsx` | Tests for `AppLayout` and `ProtectedLayout` |
+| `src/components/ui/LoadingSpinner.test.jsx` | Tests for loading spinner |
+| `src/App.test.jsx` | Updated smoke test for unauthenticated login redirect |
+
+## Files Removed
+
+| Path | Reason |
+| --- | --- |
+| `src/components/Layout.jsx` | Replaced by MUI `AppLayout` / `SidebarMenu` / `TopNavbar` |
 
 ## Verification
 
 - `npm run dev` — development server starts
 - `npm run build` — production build succeeds
-- `npm run lint` — ESLint passes (flat config without invalid `eslint/config` imports)
-- `npm run test` — Vitest smoke and sanitization tests pass
+- `npm run lint` — ESLint passes
+- `npm run test` — Vitest layout, spinner, and app tests pass (9 tests)
 - `npm run format:check` — Prettier check passes
-
-## Review Follow-up (PR #1)
-
-- Fixed `eslint.config.js` to use valid ESLint 10 flat config array export.
-- Confirmed all `src/` application files are tracked in git (included in commit `d0eb4a5` and subsequent fixes).
-- Added Axios error sanitization to avoid leaking sensitive headers or payload fields.
-- Added Vitest smoke test for app render and unit test for error sanitization.
-- Renamed npm package to `employ-management-frontend`.
 
 ## Open Questions / Follow-ups
 
-- Backend API package and shared types are not in scope for FE-001.
-- Authentication flow and protected routes will be added in a future task.
-- Consider adopting a dedicated state library (e.g. Zustand) when global state grows.
+- Replace `LoginPage` demo sign-in with real authentication API integration.
+- Add user profile / sign-out actions to `TopNavbar` when auth is available.
+- Consider dynamic page titles in `TopNavbar` based on the active route.
 
-## Assumptions
+## Branch Base
 
-- Default API base URL `http://localhost:3000/api` is a reasonable local backend default.
-- Sanitized error objects replace raw Axios errors on rejection; callers receive redacted metadata only.
+Built on top of **FE-001** (`origin/sunset/task/4-7b21017f`) which provides the React + Vite foundation, routing, and API layer.

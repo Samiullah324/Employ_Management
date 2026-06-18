@@ -1,9 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
-import { Layout } from '../components';
+import { ProtectedLayout } from '../components';
 import {
   AttendancePage,
   EmployeesPage,
   HomePage,
+  LoginPage,
   NotFoundPage,
   PayrollPage,
 } from '../pages';
@@ -11,7 +12,8 @@ import {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Layout />}>
+      <Route path="/login" element={<LoginPage />} />
+      <Route element={<ProtectedLayout />}>
         <Route index element={<HomePage />} />
         <Route path="employees" element={<EmployeesPage />} />
         <Route path="attendance" element={<AttendancePage />} />

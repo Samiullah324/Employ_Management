@@ -8,5 +8,15 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: './src/test/setup.js',
+    server: {
+      deps: {
+        inline: [
+          '@mui/material',
+          '@mui/icons-material',
+          '@emotion/react',
+          '@emotion/styled',
+        ],
+      },
+    },
   },
 });

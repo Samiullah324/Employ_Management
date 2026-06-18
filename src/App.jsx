@@ -1,15 +1,19 @@
+import { CssBaseline, ThemeProvider } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
 import { AppRoutes } from './routes';
 import { AppStoreProvider } from './store';
-import './App.css';
+import { theme } from './theme';
 
 function App() {
   return (
-    <AppStoreProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
-    </AppStoreProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <AppStoreProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </AppStoreProvider>
+    </ThemeProvider>
   );
 }
 
