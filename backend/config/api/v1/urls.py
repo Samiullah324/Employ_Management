@@ -1,5 +1,7 @@
-from django.urls import path
+from django.urls import include, path
 
 app_name = "v1"
 
-urlpatterns = []
+urlpatterns = [
+    path("auth/", include("apps.accounts.urls")),
+]
