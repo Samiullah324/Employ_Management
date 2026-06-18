@@ -1,44 +1,40 @@
-# TASK_CONTEXT — BE-001: Initialize Django Backend Project
+# TASK_CONTEXT — BE-002: Dockerize Backend Application
 
 ## Ticket Scope
 
-Initialize the Django REST API backend for the Employee Management System with PostgreSQL, DRF, CORS, environment variables, and API versioning (`/api/v1/`).
+Containerize the Django backend and PostgreSQL database so the full backend stack starts with a single `docker compose up` command.
 
 ## Key Implementation Decisions
 
-- **Project name:** `config` (Django project package at `backend/config/`)
-- **Apps location:** Future apps live under `backend/apps/`
-- **Settings:** `python-decouple` for all sensitive/config values from `.env`
-- **Database:** PostgreSQL only (no SQLite fallback)
-- **API versioning:** `backend/config/api/v1/urls.py` included at `/api/v1/` with empty `urlpatterns` for future endpoints
-- **API docs:** `drf-spectacular` at `/api/schema/`, `/api/docs/`, `/api/redoc/`
-- **CORS:** `django-cors-headers` with origins from `CORS_ALLOWED_ORIGINS` env var
+- **Base image:** `python:3.12-slim` with `libpq-dev` and `gcc` for `psycopg2-binary` build compatibility
+- **Database:** `postgres:16-alpine` with a named volume (`postgres_data`) for persistence
+- **Startup flow:** `docker/entrypoint.sh` waits for PostgreSQL, runs migrations, collects static files, then starts `runserver` on `0.0.0.0:8000`
+- **Environment:** `docker-compose.yml` loads `.env` and overrides `DB_HOST=db` for in-network database access
+- **Volumes:** PostgreSQL data, static files, media files, and a bind mount on `./backend` for development
+- **Health checks:** `pg_isready` for PostgreSQL; HTTP `GET /api/schema/` for Django
+- **Dependency on BE-001:** This branch includes the Django project from BE-001 (`sunset/task/1-7b21017f`) because the backend must exist before it can be dockerized
 
 ## Files Changed
 
 | File | Purpose |
 |------|---------|
-| `backend/manage.py` | Django CLI entry point (`config.settings`) |
-| `backend/config/settings.py` | DRF, PostgreSQL, CORS, static/media, spectacular |
-| `backend/config/urls.py` | Admin, API v1, schema/docs routes |
-| `backend/config/api/v1/urls.py` | Empty v1 API namespace |
-| `backend/config/wsgi.py`, `asgi.py` | Deployment entry points |
-| `backend/apps/__init__.py` | Placeholder for future apps |
-| `requirements.txt` | Django, DRF, psycopg2, decouple, cors, spectacular |
-| `.env.example` | Environment variable template |
-| `.gitignore` | Python/Django ignores (includes `.env`, `venv/`) |
-| `README.md` | Setup and project documentation |
-| `backend/config/tests/test_config.py` | Smoke tests for URLs, DRF, CORS, PostgreSQL config |
+| `Dockerfile` | Python image, dependencies, backend code, entrypoint |
+| `docker-compose.yml` | `db` and `web` services, volumes, health checks, port mappings |
+| `docker/entrypoint.sh` | Wait for DB, migrate, collectstatic, start server |
+| `.dockerignore` | Exclude venv, `.env`, caches, and build artifacts from image context |
+| `.env.example` | Document `DB_HOST` override and `web` in `ALLOWED_HOSTS` for Docker |
+| `README.md` | Docker quick-start, service table, and updated project structure |
+| `backend/config/tests/test_docker.py` | Smoke tests for Docker files and compose configuration |
 
 ## Verification
 
-- `python manage.py check` — Django system checks
-- `python manage.py test config.tests` — 7 smoke tests (URLs, DRF, CORS, PostgreSQL engine)
-- `python manage.py runserver` — server starts (requires `.env` and PostgreSQL)
-- PostgreSQL connection verified via `migrate` when DB is available
+- `python manage.py test config.tests` — all smoke tests (config + docker)
+- `docker compose config` — validates compose file syntax
+- `docker compose up --build` — starts PostgreSQL and Django; migrations run automatically
+- `curl http://127.0.0.1:8000/api/schema/` — confirms API is reachable after startup
 
 ## Open Questions / Follow-ups
 
-- Future tickets will add Django apps under `backend/apps/` and register routes in `config/api/v1/urls.py`
-- Authentication/permissions strategy not defined in this ticket
-- CI/CD pipeline not part of BE-001
+- Production deployment would replace `runserver` with Gunicorn/uWSGI (out of scope for BE-002)
+- BE-001 must merge to `main` before or with this PR so the backend code is available on the base branch
+- Frontend Docker setup is handled in a separate ticket

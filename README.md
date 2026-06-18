@@ -6,8 +6,45 @@ REST API backend for the Employee Management System, built with Django 4.2 and D
 
 - Python 3.10+
 - PostgreSQL 12+
+- Docker and Docker Compose (optional, for containerized setup)
 
-## Setup
+## Quick Start with Docker
+
+Run the complete backend stack (Django + PostgreSQL) with a single command:
+
+```bash
+cp .env.example .env
+# Edit .env and set SECRET_KEY and DB_PASSWORD
+docker compose up --build
+```
+
+The API will be available at `http://127.0.0.1:8000/`.
+
+| Service | Port | Description |
+|---------|------|-------------|
+| `web` | 8000 | Django development server |
+| `db` | 5432 | PostgreSQL database |
+
+Docker Compose automatically:
+
+- Waits for PostgreSQL to become healthy before starting Django
+- Runs database migrations on startup
+- Collects static files into a named volume
+- Mounts `./backend` for live code changes during development
+
+To stop the stack:
+
+```bash
+docker compose down
+```
+
+To remove persisted database data:
+
+```bash
+docker compose down -v
+```
+
+## Local Setup (without Docker)
 
 ### 1. Clone the repository
 
@@ -94,6 +131,10 @@ Employ_Management/
 │   │   └── api/
 │   │       └── v1/          # API v1 URL routing
 │   └── apps/                # Future Django apps
+├── docker/
+│   └── entrypoint.sh        # Container startup script
+├── Dockerfile
+├── docker-compose.yml
 ├── requirements.txt
 ├── .env.example
 └── README.md
