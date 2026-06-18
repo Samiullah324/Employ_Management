@@ -3,12 +3,10 @@ import { describe, expect, it } from 'vitest';
 import App from './App';
 
 describe('App', () => {
-  it('renders without crashing', () => {
+  it('renders the login page for unauthenticated users', () => {
     render(<App />);
     expect(
-      screen.getByRole('heading', {
-        name: /employee attendance & payroll management/i,
-      }),
+      screen.getByRole('heading', { name: /sign in/i }),
     ).toBeInTheDocument();
   });
 });
