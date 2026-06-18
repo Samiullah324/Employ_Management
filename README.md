@@ -40,5 +40,6 @@ src/
 - `npm run dev` — start development server
 - `npm run build` — production build
 - `npm run lint` — run ESLint
+- `npm run test` — run unit and smoke tests
 - `npm run format` — format code with Prettier
 - `npm run preview` — preview production build
