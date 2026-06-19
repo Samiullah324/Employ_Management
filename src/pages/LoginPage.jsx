@@ -1,12 +1,16 @@
 import { Box, Button, Paper, Typography } from '@mui/material';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store';
 
 function LoginPage() {
-  const { setState } = useAppStore();
+  const { state, setState } = useAppStore();
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
+
+  if (state.isAuthenticated) {
+    return <Navigate to={from} replace />;
+  }
 
   const handleSignIn = () => {
     setState((prev) => ({

@@ -14,9 +14,9 @@ export function AppStoreProvider({
     () => ({
       state,
       setState,
-      resetStore: () => setState(initialStateDefault),
+      resetStore: () => setState(initialState),
     }),
-    [state],
+    [state, initialState],
   );
 
   return (

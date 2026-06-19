@@ -1,8 +1,9 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../utils/constants';
 import { sanitizeAxiosError } from '../utils/sanitizeError';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api',
+  baseURL: API_BASE_URL,
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

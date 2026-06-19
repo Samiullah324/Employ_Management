@@ -58,3 +58,9 @@ class ConfigSmokeTests(SimpleTestCase):
             settings.MIDDLEWARE[0],
             "corsheaders.middleware.CorsMiddleware",
         )
+
+    def test_cors_allowed_origins_include_vite_dev_server(self):
+        from django.conf import settings
+
+        self.assertIn("http://localhost:5173", settings.CORS_ALLOWED_ORIGINS)
+        self.assertIn("http://127.0.0.1:5173", settings.CORS_ALLOWED_ORIGINS)
