@@ -10,7 +10,7 @@ describe('sanitizeAxiosError', () => {
       config: {
         method: 'post',
         url: '/login',
-        baseURL: 'http://localhost:3000/api',
+        baseURL: 'http://localhost:8000/api/v1',
         headers: {
           Authorization: 'Bearer secret-token',
           'Content-Type': 'application/json',
